@@ -489,7 +489,7 @@ C     CALCULATING THE EIGENVALUES OF A MATRIX H0
       CALL HQRM2(NT,NT,LOW,IGH,H0,X,Y,IERR,100)
       
       IF (IERR.NE.0) THEN
-          WRITE(*,*)' HQRM2 IERR = ',IERR
+          IF (ISDEBUG) WRITE(*,*)' HQRM2 IERR = ',IERR
           STOP
       ENDIF
 
@@ -531,7 +531,9 @@ C     CHECKING THE STABILITY CONDITION
       ENDIF
    52 FORMAT (9E8.1)
       F = FL
-      IF(IPR.EQ.2) WRITE (*,120) F,XX
+      IF(IPR.EQ.2) THEN
+          IF (ISDEBUG) WRITE (*,120) F,XX
+      ENDIF
   120 FORMAT ('F =',E12.4,'V =',E12.4)
       RETURN
       END
@@ -582,7 +584,7 @@ C
       MI = 2
       NOUT = 4
       OPEN(UNIT=NOUT,FILE=TRIM(ADJUSTL(PATH))//'NOUT')
-      WRITE (*,75) V,IN
+      IF (ISDEBUG) WRITE (*,75) V,IN
       WRITE (NOUT,75) V,IN
    75 FORMAT(5H V = ,E13.6,5H IN =,I3)
       OPEN (8,FILE=TRIM(ADJUSTL(PATH))//'MATRA')
@@ -598,7 +600,7 @@ C
 
       CALL HQRM2(NT,NT,1,NT,H0,X,Y,IERR,200)
 
-      WRITE(*,*) 'IERR = ',IERR
+      IF (ISDEBUG) WRITE(*,*) 'IERR = ',IERR
       
   12  FORMAT (4E18.11)
       
@@ -613,7 +615,7 @@ C
           IF (Y(I).GT.0.) IS=IS+1
       ENDDO
       
-      WRITE(*,120) IS
+      IF (ISDEBUG) WRITE(*,120) IS
   120 FORMAT(I3,' COMPLEX COUPLES')
       WRITE(NOUT,120) IS
       IL=0
@@ -626,7 +628,7 @@ C
       
   100 IL=IL+1
       WRITE(NOUT,*) 'IL = ',IL
-      WRITE(*,*) 'IL = ',IL
+      IF (ISDEBUG) WRITE(*,*) 'IL = ',IL
 
       P = 1.D25
       
@@ -640,7 +642,7 @@ C
           ENDIF
    33 CONTINUE
       
-      WRITE(*,*) 'II = ',II
+      IF (ISDEBUG) WRITE(*,*) 'II = ',II
       CZ = CMPLX(X(II),Y(II))
 
       LAMDA(IL) = CZ
@@ -648,16 +650,16 @@ C
   115 FORMAT(I3,' - eigenvalue')
       WRITE(NOUT,*) ' '
       WRITE(NOUT,12) CZ
-      WRITE(*,115) IL
-      WRITE(*,*) ' '
-      WRITE(*,12) CZ
+      IF (ISDEBUG) WRITE(*,115) IL
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,12) CZ
       
 C     Проверка условия устойчивости
 C     
       
       FL = REAL(CZ)*K**2-RO*H*DIMAG(CZ)**2
-      WRITE(*,*)' CHECK OF STABILITY CONDITION'
-      WRITE(*,12) FL
+      IF (ISDEBUG) WRITE(*,*)' CHECK OF STABILITY CONDITION'
+      IF (ISDEBUG) WRITE(*,12) FL
       WRITE(NOUT,*)' CHECK OF STABILITY CONDITION'
       WRITE(NOUT,12) FL
 
@@ -674,7 +676,7 @@ C
               IF (IL.EQ.IN) THEN
                   SELECT(II) = .TRUE.
                   WERESELECTED = .TRUE.
-                  WRITE(*,*)IL, IN, 'TRUE'
+                  !WRITE(*,*)IL, IN, 'TRUE'
               ELSE
                   GO TO 400
               ENDIF
@@ -686,12 +688,12 @@ C
       
       CALL INVIT(NT,NT,H0,X,Y,SELECT,MMI,MI,ZZ,IERR,RM1,RV1,RV2)
       
-      WRITE(*,*) 'IERR = ',IERR
+      IF (ISDEBUG) WRITE(*,*) 'IERR = ',IERR
       
       IF (IERR.NE.0) THEN
-          WRITE(*,*) 'MISTAKE IN THE SUBPROGRAMME OF
+          IF (ISDEBUG) WRITE(*,*) 'MISTAKE IN THE SUBPROGRAMME OF
      * CALCULATION OF THE EIGENVECTOR'
-          WRITE(*,*) ' IERR = ', IERR
+          IF (ISDEBUG) WRITE(*,*) ' IERR = ', IERR
           STOP
       ENDIF
       
@@ -719,14 +721,14 @@ C
       ENDDO    
       
       IJ = 0
-      
+            
       DO I = 1,M
           DO J = 1,N
               IJ=IJ+1
               WRITE (NREZ1,150) XGRID(I),YGRID(J),URR(IJ)
           ENDDO
       ENDDO
-      
+                  
 150   FORMAT(1X,F9.5,F9.5,F9.5)                 
       WRITE (NOUT,*) 'EIGENVECTOR RE'
       WRITE (NOUT,12) (URR(I),I=1,NT)
@@ -745,7 +747,7 @@ C
       CALL NORM (Y2,21)
       WRITE(NOUT,*) 'EIGENVECTOR RE ON THE AXIS X IN 21 POINTS'
       WRITE(NOUT,12) Y2
-      PRINT 12,Y2
+      IF (ISDEBUG) PRINT 12,Y2
       IF(DIMAG(CZ).EQ.0.D0) GO TO 200
       DO 44 I=1,N
 44    YY(I)=UI(N*(((M-1)/2))+I)
@@ -755,9 +757,9 @@ C
       CALL NORM (Y2,21)
       WRITE(NOUT,*) 'EIGENVECTOR IM ON THE AXIS X IN 21 POINTS'
       WRITE(NOUT,12) Y2
-      PRINT 12,Y2
+      IF (ISDEBUG) PRINT 12,Y2
   200 CONTINUE
-      WRITE (*,*) 'CHECK OF SYMMETRY OF THE EIGENVECTOR'
+      IF (ISDEBUG) WRITE (*,*) 'CHECK OF SYMMETRY OF THE EIGENVECTOR'
       WRITE (NOUT,*) 'CHECK OF SYMMETRY OF THE EIGENVECTOR'
       NM=(M-1)/2
       DO 50 I=1,NM
@@ -769,7 +771,7 @@ C
       IF(ABS(Q).GT.P) P=ABS(Q)
    51 CONTINUE
    50 ER(I)=P
-      WRITE(*,52) (ER(I),I=1,NM)
+      IF (ISDEBUG) WRITE(*,52) (ER(I),I=1,NM)
       WRITE(NOUT,52) (ER(I),I=1,NM)
       IF(DIMAG(CZ).EQ.0.D0) GO TO 300
       DO 60 I=1,NM
@@ -781,7 +783,7 @@ C
       IF(ABS(Q).GT.P) P=ABS(Q)
    61 CONTINUE
    60 ER(I)=P
-      WRITE(*,52) (ER(I),I=1,NM)
+      IF (ISDEBUG) WRITE(*,52) (ER(I),I=1,NM)
       WRITE(NOUT,52) (ER(I),I=1,NM)
   300 CONTINUE
   400 CONTINUE
@@ -791,54 +793,59 @@ C
       GO TO 100
       ENDIF
       WRITE (NOUT,*) 'LAMDA'
-      WRITE (*,*) 'LAMDA'
+      IF (ISDEBUG) WRITE (*,*) 'LAMDA'
       WRITE (NOUT,70) (LAMDA(I),I=1,NLAMDA)
-      WRITE (*,70) (LAMDA(I),I=1,NLAMDA)
+      IF (ISDEBUG) WRITE (*,70) (LAMDA(I),I=1,NLAMDA)
    70 FORMAT(1X,2E18.11)
       RETURN
    52 FORMAT (9E8.1)
       END
+      
+      
+C     ---------------------------------------------------------------------------
+      
       SUBROUTINE FLUT16C
 C 23.09.96 Флаттер тетрадь N2,стр. 129
       IMPLICIT REAL*8 (A-H,O-Z)
-C     PARAMETER (M=19,N=19,NT=M*N,NG=101)
+
       DIMENSION U(2500),Y(2500),Z(2500),Y2(101),X2(101)
       REAL*8 K
       character*26 PATH
       COMMON /DATA/ K,H,BL,RO,DB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
       COMMON //PATH
-      PI=3.14159265359D0
+      
+      PI=  3.14159265359D0
+      
       OPEN (9,FILE=TRIM(ADJUSTL(PATH))//'FDATA1')
       REWIND 9
-      NG=101
+      
+      NG = 101
       READ(9,12) (U(I),I=1,NT)
-C     READ(4,12) U
-C 12  FORMAT (1X,4E18.11)
+
   12  FORMAT (4E18.11)
-C     WRITE(*,12) U(1),U(NT)
-C
+      
       DO 40 I=1,N
-40    Y(I)=U(N*(((M-1)/2))+I)
-      DO 20 L=1,NG
-      X=-1.+0.02*(L-1)
-      X2(L)=X
-  20  Y2(L)=EIGEN (X,Y,Z,N,-1.D0,+1.D0)
+40    Y(I) = U(N*(((M-1)/2))+I)
+      DO 20 L = 1,NG
+          X = -1.+0.02*(L-1)
+          X2(L) = X
+  20  Y2(L) = EIGEN(X,Y,Z,N,-1.D0,+1.D0)
       CALL NORM1(Y2,NG)
       OPEN(5,FILE=TRIM(ADJUSTL(PATH))//'RDATA1')
       WRITE (5,13) X2
       WRITE (5,13) Y2
   13  FORMAT(1X,4E19.11)
-C     WRITE(*,12) U(1),U(NT)
-      I1=(N+1)/2
+
+      I1 = (N+1)/2
       DO 41 I=1,M
-      Y(I)=U(I1)
-  41  I1=I1+N
-      STEP=2.*BL/(NG-1)
+          Y(I) = U(I1)
+  41  I1 = I1+N
+      STEP = 2.*BL/(NG-1)
       DO 21 L=1,NG
-      X=-BL+STEP*(L-1)
-      X2(L)=X
-  21  Y2(L)=EIGEN (X,Y,Z,M,-BL,BL)
+          X = -BL+STEP*(L-1)
+          X2(L) = X
+  21  Y2(L) = EIGEN(X,Y,Z,M,-BL,BL)
       CALL NORM1(Y2,NG)
       WRITE (5,13) X2
       WRITE (5,13) Y2
@@ -876,6 +883,7 @@ C     --------------------------------------------------------------------------
       character*26 PATH
       COMMON /DATA/ K,H,BL,RO,DB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
+      COMMON /DEBUG/ ISDEBUG
       COMMON //PATH
       NG=101
       PI=3.14159265359D0
@@ -912,7 +920,7 @@ C     --------------------------------------------------------------------------
       X = -BL+STEP*(L-1)
       X2(L) = X
 
-  21  W2(L,J)=EIGEN (X,Y,Z,M,-BL,BL)
+  21  W2(L,J) = EIGEN(X,Y,Z,M,-BL,BL)
   60  CONTINUE
 
       CALL NORM1(W2,NG*NG)
@@ -1095,14 +1103,14 @@ C     --------------------------------------------------------------------------
      *TK(50),TK1(50),TK2(50),TK3(50),TK4(50)
       COMMON /D/ Dx,Dxy,Dy
       IF (N.GT.50.OR.M.GT.50) THEN
-      WRITE (*,*) 'M OR N IS MORE THAN 50. STOP.'
-      STOP
+          !WRITE (*,*) 'M OR N IS MORE THAN 50. STOP.'
+          STOP
       ENDIF
       
 C     ПОСТРОЕНИЕ МАРИЦЫ H
 C     BUILDING MATRIX H
-      WRITE(*,*) 'BL =',BL
-      PAUSE
+      !WRITE(*,*) 'BL =',BL
+      !PAUSE
       PI = 3.141592653589D0
       I1 = 0
       DO 2 MU = 1,M
