@@ -6,6 +6,8 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       REAL*8 K
       REAL*8 NUx, NUy
       CHARACTER*3 KEY
+      INTEGER :: i
+      CHARACTER(len=32) :: arg
       COMMON /DATA/ K,H,BL,RO,DB
       COMMON /DEBUG/ ISDEBUG
       COMMON /D/ Dx,Dxy,Dy
@@ -13,12 +15,20 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       DATA PATH /'C:/reports/'/
 
       ! IF WRITES ARE NEEDED SET ISDEBUG, ELSE IT PRINTS ONLY RESULT SPEED
-      ISDEBUG = .FALSE.
+      ISDEBUG = .TRUE.
       
       IF (ISDEBUG) THEN
           WRITE(*,*)'-----DEBUG PRINT ALL MODE-----'
       ENDIF
-
+      
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE
+          IF(COMMAND_ARGUMENT_COUNT().NE.8) THEN
+              WRITE(*,*)'BL;HL;Ex;Ey;NUx;NUy;Gxy;RO'
+              STOP
+          ENDIF
+      ENDIF
       
 C     ’¿–¿ “≈–ÕŒ≈ ƒ¿¬À≈Õ»≈
 C     P0 = 1 ¿“Ã (‘»«»◊≈— ¿ﬂ) = 1.0133E5 Õ/Ã**2 = 1.0333  √/—Ã**2
@@ -31,7 +41,19 @@ C      Œ›‘‘»÷»≈Õ“ œ”¿——ŒÕ¿ PNU=0.33
 C     POISSONS RATIO
       !PNU = 0.33D0
       NUx = 0.15D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(5, arg)
+          READ(arg,*)NUx
+      ENDIF
       NUy = 0.12D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(6, arg)
+          READ(arg,*)NUy
+      ENDIF
       
       
 C     œŒ ¿«¿“≈À‹ œŒÀ»“–Œœ€ K = 1.4
@@ -44,6 +66,12 @@ C     CORRESPONDS TO THE SONIC SPEED 331.26 M/SEC
 C     ¡≈«–¿«Ã≈–Õ¿ﬂ “ŒÀŸ»Õ¿ œÀ¿—“»Õ » H
 C     DIMENSIONLESS PLATE THICKNESS
       HL = 0.01D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(2, arg)
+          READ(arg,*)HL
+      ENDIF
       H = HL
       
       IF (ISDEBUG) WRITE(*,*)'H =',H
@@ -53,13 +81,31 @@ C     DIMENSIONLESS PLATE THICKNESS
 C     ÃŒƒ”À‹ ﬁÕ√¿ ¬  √/—Ã**2
 C     YOUNG'S MODULE IN KG/CM**2
       E = 305914.8D0 !ALUMINIUM
-      Ex = 305914.8D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(3, arg)
+          READ(arg,*)E
+      ENDIF
+      Ex = E
       Ey = 203943.2D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(4, arg)
+          READ(arg,*)Ey
+      ENDIF
       
 
 C     ÃŒƒ”À‹ —ƒ¬»√¿ Õ/Ã**2
 C     SHEAR MODULE H/M**2
       Gxy = 152957.4D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(7, arg)
+          READ(arg,*)Gxy
+      ENDIF
 
       
 C     ÷»À»Õƒ–»◊≈— ¿ﬂ ∆≈—“ Œ—“‹
@@ -79,11 +125,22 @@ C     AIR DENSITY 1.2928 KG/M**3
 C     œÀŒ“ÕŒ—“‹ Ã¿“≈–»¿À¿ œÀ¿—“»Õ€ 2.7E3 ( √/Ã**3)
 C     PLATE MATERIAL DENSITY KG/M**3
       RO = 2.75D3
-
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(8, arg)
+          READ(arg,*)RO
+      ENDIF
       
 C     œŒÀŒ¬»Õ¿ ÿ»–»Õ€ œÀ¿—“»Õ€
 C     HALF OF THE PLATE WIDTH (SET 1 FOR SQUARE PLATE)
       BL = 2.4D0
+      IF (ISDEBUG) THEN
+          CONTINUE
+      ELSE          
+          CALL get_command_argument(1, arg)
+          READ(arg,*)BL
+      ENDIF
       
       IF (ISDEBUG) WRITE(*,*)'BL =', BL
       IF (ISDEBUG) WRITE(*,*)' '
