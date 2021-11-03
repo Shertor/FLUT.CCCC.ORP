@@ -13,7 +13,7 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       DATA PATH /'C:/reports/'/
 
       ! IF WRITES ARE NEEDED SET ISDEBUG, ELSE IT PRINTS ONLY RESULT SPEED
-      ISDEBUG = .TRUE.
+      ISDEBUG = .FALSE.
       
       IF (ISDEBUG) THEN
           WRITE(*,*)'-----DEBUG PRINT ALL MODE-----'
@@ -548,6 +548,7 @@ C     --------------------------------------------------------------------------
      3RV1(2500),RV2(2500),XGRID(50),YGRID(50)
       DATA PI/3.141592653589D0/
       LOGICAL SELECT(1600)
+      LOGICAL WERESELECTED
       REAL*8 K
       COMPLEX*16 CZ,LAMDA(40)
       character*26 PATH 
@@ -559,11 +560,13 @@ C     --------------------------------------------------------------------------
       COMMON /COM3/ V,IN
       COMMON /DEBUG/ ISDEBUG
       COMMON //PATH      
-
-      WRITE (*,*) 'AUTOMATIC FINDING OF EIGEN
-     *VECTOR (Y/Q)'
       
-      READ (*,10) KEY1
+      WERESELECTED = .FALSE.
+
+      IF (ISDEBUG) WRITE (*,*) 'AUTOMATIC FINDING OF EIGEN VECTOR (Y/Q)'
+      
+      KEY1 = 'Y'
+      IF (ISDEBUG) READ (*,10) KEY1
    10 FORMAT(A)
       IF(KEY1.EQ.'Q') RETURN
       IF(KEY1.EQ.'Y') GO TO 110
@@ -571,7 +574,10 @@ C     --------------------------------------------------------------------------
   110 CONTINUE
       
       CALL MATRH1 (M,N,NT,H0,A,B,DX,DY,H1,TJ,BL,K,DB,V,NUMB)
-C ¬ычисление собственных значений матрицы H0
+      
+C     ¬ычисление собственных значений матрицы H0
+C     
+      
       MMI = NT
       MI = 2
       NOUT = 4
@@ -580,6 +586,7 @@ C ¬ычисление собственных значений матрицы H0
       WRITE (NOUT,75) V,IN
    75 FORMAT(5H V = ,E13.6,5H IN =,I3)
       OPEN (8,FILE=TRIM(ADJUSTL(PATH))//'MATRA')
+      
       DO 170 I=1,NT
   170 SELECT(I)=.FALSE.
       
@@ -592,19 +599,20 @@ C ¬ычисление собственных значений матрицы H0
       CALL HQRM2(NT,NT,1,NT,H0,X,Y,IERR,200)
 
       WRITE(*,*) 'IERR = ',IERR
+      
   12  FORMAT (4E18.11)
-      WRITE(NOUT,*) 'Real part of eigenvalues'
+      
+      WRITE(NOUT,*) 'REAL PART OF EIGENVALUES'
       WRITE(NOUT,12) (X(I),I=1,NT)
-C     WRITE(*,*) 'Real part of eigenvalues'
-C     WRITE(*,12) (X(I),I=1,NT)
-      WRITE(NOUT,*) 'Imaginary part of eigenvalues'
+      WRITE(NOUT,*) 'IMAGINARY PART OF EIGENVALUES'
       WRITE(NOUT,12) (Y(I),I=1,NT)
-C     WRITE(*,*) 'Imaginary part of eigenvalues'
-C     WRITE(*,12) (Y(I),I=1,NT)
+      
       IS=0
+      
       DO I=1,NT
-      IF (Y(I).GT.0.) IS=IS+1
+          IF (Y(I).GT.0.) IS=IS+1
       ENDDO
+      
       WRITE(*,120) IS
   120 FORMAT(I3,' COMPLEX COUPLES')
       WRITE(NOUT,120) IS
@@ -612,88 +620,123 @@ C     WRITE(*,12) (Y(I),I=1,NT)
 
       DO 90 I=1,NT
    90 IJ(I)=1
-C ¬ычисление минимального по модулю собственного значени€
+      
+C     ¬ычисление минимального по модулю собственного значени€
+C     
+      
   100 IL=IL+1
       WRITE(NOUT,*) 'IL = ',IL
       WRITE(*,*) 'IL = ',IL
-C     WRITE(*,*) 'NLAMDA = ',NLAMDA
-      P=1.D25
+
+      P = 1.D25
+      
       DO 33 I=1,NT
-      IF(IJ(I).EQ.0) GO TO 33
-      Q=SQRT(X(I)**2+Y(I)**2)
-      IF(Y(I).LT.0.D0) GO TO 33
-      IF(Q.LT.P) THEN
-      P=Q
-      II=I
-      ENDIF
+          IF(IJ(I).EQ.0) GO TO 33
+          Q = SQRT(X(I)**2+Y(I)**2)
+          IF(Y(I).LT.0.D0) GO TO 33
+          IF(Q.LT.P) THEN
+              P = Q
+              II = I
+          ENDIF
    33 CONTINUE
+      
       WRITE(*,*) 'II = ',II
-      CZ=CMPLX(X(II),Y(II))
-C     WRITE (*,*) CZ
-      LAMDA(IL)=CZ
-      WRITE (NOUT,115) IL
+      CZ = CMPLX(X(II),Y(II))
+
+      LAMDA(IL) = CZ
+      WRITE(NOUT,115) IL
   115 FORMAT(I3,' - eigenvalue')
       WRITE(NOUT,*) ' '
       WRITE(NOUT,12) CZ
-      WRITE (*,115) IL
+      WRITE(*,115) IL
       WRITE(*,*) ' '
       WRITE(*,12) CZ
-C ѕроверка услови€ устойчивости
-      FL=REAL(CZ)*K**2-RO*H*DIMAG(CZ)**2
-      WRITE (*,*) 'Check of stability condition'
+      
+C     ѕроверка услови€ устойчивости
+C     
+      
+      FL = REAL(CZ)*K**2-RO*H*DIMAG(CZ)**2
+      WRITE(*,*)' CHECK OF STABILITY CONDITION'
       WRITE(*,12) FL
-      WRITE (NOUT,*) 'Check of stability condition'
+      WRITE(NOUT,*)' CHECK OF STABILITY CONDITION'
       WRITE(NOUT,12) FL
-C     PAUSE
-      WRITE(*,*) 'CALCULATE THIS EIGENVECTOR (Y/N)'
-      READ(*,15) KEY
+
+      IF (.FALSE.) THEN
+          WRITE(*,*)' CALCULATE THIS EIGENVECTOR (Y/N)'
+          READ(*,15) KEY
   15  FORMAT(A)
-      IF(KEY.EQ.'Y') SELECT(II)=.TRUE.
-      IF(KEY.EQ.'N') GO TO 400
-      REWIND 8
-      READ(8,12) (H0(I),I=1,NT*NT)
-      CALL INVIT(NT,NT,H0,X,Y,SELECT,MMI,MI,ZZ,IERR,RM1,RV1,RV2)
-      WRITE(*,*) 'IERR = ',IERR
-      IF (IERR.NE.0) THEN
-      WRITE(*,*) 'Mistake in the subprogramme of
-     * calculation of the eigenvector'
-      WRITE(*,*) ' IERR = ', IERR
-      STOP
+          IF(KEY.EQ.'Y') SELECT(II) = .TRUE.
+          IF(KEY.EQ.'N') GO TO 400
+      ELSE
+          IF (WERESELECTED) THEN
+              GO TO 400
+          ELSE
+              IF (IL.EQ.IN) THEN
+                  SELECT(II) = .TRUE.
+                  WERESELECTED = .TRUE.
+                  WRITE(*,*)IL, IN, 'TRUE'
+              ELSE
+                  GO TO 400
+              ENDIF
+          ENDIF
       ENDIF
+            
       REWIND 8
       READ(8,12) (H0(I),I=1,NT*NT)
+      
+      CALL INVIT(NT,NT,H0,X,Y,SELECT,MMI,MI,ZZ,IERR,RM1,RV1,RV2)
+      
+      WRITE(*,*) 'IERR = ',IERR
+      
+      IF (IERR.NE.0) THEN
+          WRITE(*,*) 'MISTAKE IN THE SUBPROGRAMME OF
+     * CALCULATION OF THE EIGENVECTOR'
+          WRITE(*,*) ' IERR = ', IERR
+          STOP
+      ENDIF
+      
+      REWIND 8
+      READ(8,12) (H0(I),I=1,NT*NT)
+      
       CALL ELMBAK(NT,LOW,IGH,H0,INT,MI,ZZ)
       CALL BALBAK(NT,NT,LOW,IGH,SCALE,MI,H0)
-      M11=2*M
-      DO 22 I=1,NT                                                      ZAP03500
-      URR(I)=ZZ(I)
-  22  UI(I)= ZZ(NT+I)
+      
+      M11 = 2*M
+      DO 22 I = 1,NT                                                    ZAP03500
+      URR(I) = ZZ(I)
+  22  UI(I) = ZZ(NT+I)
       OPEN (9,FILE=TRIM(ADJUSTL(PATH))//'FDATA1')
       NREZ1=18
       OPEN(UNIT=NREZ1,FILE=TRIM(ADJUSTL(PATH))//'REZULT.txt')
-         DO  I=1,M
+      
+      DO  I=1,M
          T=(2.D0*I-1.D0)*PI/2.D0/M
          XGRID(I)=COS(T)
-         ENDDO
-         DO  I=1,N
+      ENDDO
+      DO  I=1,N
          T=(2.D0*I-1.D0)*PI/2.D0/N
          YGRID(I)=BL*COS(T) 
-         ENDDO     
-      IJ=0
-      DO I=1,M
-      DO J=1,N
-      IJ=IJ+1
-      WRITE (NREZ1,150) XGRID(I),YGRID(J),
-     1URR(IJ)
+      ENDDO    
+      
+      IJ = 0
+      
+      DO I = 1,M
+          DO J = 1,N
+              IJ=IJ+1
+              WRITE (NREZ1,150) XGRID(I),YGRID(J),URR(IJ)
+          ENDDO
       ENDDO
-      ENDDO
+      
 150   FORMAT(1X,F9.5,F9.5,F9.5)                 
       WRITE (NOUT,*) 'EIGENVECTOR RE'
       WRITE (NOUT,12) (URR(I),I=1,NT)
       WRITE (9,12) (URR(I),I=1,NT)
       WRITE (NOUT,*) 'EIGENVECTOR IM'
       WRITE (NOUT,12) (UI(I),I=1,NT)
-C ќб€зательно M нечетное
+      
+C     ќб€зательно M нечетное
+C     
+      
       DO 40 I=1,N
 40    YY(I)=URR(N*(((M-1)/2))+I)
       DO 20 LL=1,21
