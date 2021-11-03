@@ -7,13 +7,17 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       REAL*8 NUx, NUy
       CHARACTER*3 KEY
       COMMON /DATA/ K,H,BL,RO,DB
-      COMMON /DEBUG/ COM
+      COMMON /DEBUG/ ISDEBUG
       COMMON /D/ Dx,Dxy,Dy
       COMMON //PATH
       DATA PATH /'C:/reports/'/
 
-      ! IF WRITES ARE NEEDED SET COM = 1, ELSE IT PRINTS ONLY RESULT SPEED
-      COM = 1
+      ! IF WRITES ARE NEEDED SET ISDEBUG, ELSE IT PRINTS ONLY RESULT SPEED
+      ISDEBUG = .TRUE.
+      
+      IF (ISDEBUG) THEN
+          WRITE(*,*)'-----DEBUG PRINT ALL MODE-----'
+      ENDIF
 
       
 C     ХАРАКТЕРНОЕ ДАВЛЕНИЕ
@@ -42,8 +46,8 @@ C     DIMENSIONLESS PLATE THICKNESS
       HL = 0.01D0
       H = HL
       
-      IF (COM.EQ.1) WRITE(*,*)'H =',H
-      IF (COM.EQ.1) PAUSE
+      IF (ISDEBUG) WRITE(*,*)'H =',H
+      IF (ISDEBUG) PAUSE
 
       
 C     МОДУЛЬ ЮНГА В КГ/СМ**2
@@ -81,23 +85,23 @@ C     ПОЛОВИНА ШИРИНЫ ПЛАСТИНЫ
 C     HALF OF THE PLATE WIDTH (SET 1 FOR SQUARE PLATE)
       BL = 2.4D0
       
-      IF (COM.EQ.1) WRITE(*,*)'BL =', BL
-      IF (COM.EQ.1) WRITE(*,*)' '
+      IF (ISDEBUG) WRITE(*,*)'BL =', BL
+      IF (ISDEBUG) WRITE(*,*)' '
       
       
 C     SONIC SPEEDS
    10 FORMAT(A)
       C0 = SQRT(K*9.81523D4*P0/R)
-      IF (COM.EQ.1) WRITE(*,15) C0
+      IF (ISDEBUG) WRITE(*,15) C0
    15 FORMAT(' SONIC SPEED C0 = ',E12.5)
       C1 = 1.D2*SQRT(9.81523D4*E/RO)
       C1 = SQRT((1.D6/10.19762D0)*E/RO)
-      IF (COM.EQ.1) WRITE(*,16) C1
+      IF (ISDEBUG) WRITE(*,16) C1
    16 FORMAT(' SONIC SPEED IN THE PLATE C1 = ',E12.5)
       C2 = C1/C0
-      IF (COM.EQ.1) WRITE(*,17) C2
+      IF (ISDEBUG) WRITE(*,17) C2
    17 FORMAT(' DIMENSIOLENS SONIC SPEED IN THE PLATE C2 = ',E12.5)  
-      IF (COM.EQ.1) PAUSE
+      IF (ISDEBUG) PAUSE
 
 C     ОБЕЗРАЗМЕРИВАНИЕ
 C     DIMENSIONLESS  
@@ -117,15 +121,17 @@ C     DIMENSIONLESS
       CALL FLUT33D
 
 C     POINTS WRITE TO FILE
-      IF (COM.EQ.1) WRITE(*,*) 'EXPORT RE OF EIGENFUNCTION? (Y/N)'
+      IF (ISDEBUG) WRITE(*,*) 'EXPORT RE OF EIGENFUNCTION? (Y/N)'
 
       KEY='Y'
-      IF (COM.EQ.1) READ (*,10)KEY
+      IF (ISDEBUG) READ (*,10)KEY
       IF (KEY.NE.'Y') STOP
 
       CALL FLUT16C
 
       CALL FLUT16D
+      
+      IF (ISDEBUG) WRITE(*,*) 'EXPORT FINISHED'
 
       STOP
       END
@@ -139,7 +145,7 @@ C     --------------------------------------------------------------------------
       REAL*8 K
       EXTERNAL F
       COMMON /DATA/ K,H,BL,RO,DB
-      COMMON /DEBUG/ COM
+      COMMON /DEBUG/ ISDEBUG
       COMMON /COM1/ IPR,NUMB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
       COMMON /COM3/ V,IN
@@ -153,25 +159,25 @@ C     1 - CCCC    2 - SSSS
       NUMB = 1
 
       
-      IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,*) 'TJ = ? (IN DEGREES)'
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,*) 'TJ = ? (IN DEGREES)'
       
       TJ2 = 180.0D0
       TJ1 = 0.0D0
-      IF (COM.EQ.1) READ (*,*) TJ1
+      IF (ISDEBUG) READ (*,*) TJ1
       TJ=TJ1/TJ2
       
- 700  IF (COM.EQ.1) WRITE(*,*) ' '
+ 700  IF (ISDEBUG) WRITE(*,*) ' '
 
    10 FORMAT(A)
       KEY1 = 'A'
       IF(KEY1.EQ.'Q') RETURN
       IF(KEY1.EQ.'A') GO TO 25
 
-      IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,*) 'M = ?, N = ?'
-      IF (COM.EQ.1) READ (*,*) M,N
-      IF (COM.EQ.1) THEN
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,*) 'M = ?, N = ?'
+      IF (ISDEBUG) READ (*,*) M,N
+      IF (ISDEBUG) THEN
           IF(M.GT.40.OR.N.GT.40) THEN
               WRITE(*,*) 'M OR N MORE THAN 40. STOP'
               STOP
@@ -180,18 +186,18 @@ C     1 - CCCC    2 - SSSS
 
       NT=M*N
 
-  150 IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,*) ' NLAMDA = ? '
-      IF (COM.EQ.1) READ (*,*) NLAMDA
+  150 IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,*) ' NLAMDA = ? '
+      IF (ISDEBUG) READ (*,*) NLAMDA
 
-      IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,*) ' A,B = ?'
-      IF (COM.EQ.1) READ (*,*) A,B
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,*) ' A,B = ?'
+      IF (ISDEBUG) READ (*,*) A,B
 
       CALL MATRH2 (M,N,NT,H0,AA,BB,H1,BL,NUMB)
 
       IF(F(A)*F(B).GT.0.) THEN
-          IF (COM.EQ.1) WRITE(*,*) 'ON THE ENDS OF THE
+          IF (ISDEBUG) WRITE(*,*) 'ON THE ENDS OF THE
      *SET INTERVAL FUNCTION OF STABILITY HAS IDENTICAL SIGNS'
           GO TO 150
       ENDIF
@@ -210,17 +216,17 @@ C     DEFAULT PARAMETERS
       NSTEP = 20
       
       
-      IF (COM.EQ.1) WRITE(*,26) NLAMDA
+      IF (ISDEBUG) WRITE(*,26) NLAMDA
    26 FORMAT(' NLAMDA =', I3)
-      IF (COM.EQ.1) WRITE(*,27) V0
+      IF (ISDEBUG) WRITE(*,27) V0
    27 FORMAT(' V0 =', E9.2)
-      IF (COM.EQ.1) WRITE(*,28) STEP
+      IF (ISDEBUG) WRITE(*,28) STEP
    28 FORMAT(' STEP =', E9.2)
-      IF (COM.EQ.1) WRITE(*,29) V
+      IF (ISDEBUG) WRITE(*,29) V
    29 FORMAT(' V =', E9.2)
-      IF (COM.EQ.1) WRITE(*,30) NSTEP
+      IF (ISDEBUG) WRITE(*,30) NSTEP
    30 FORMAT(' NSTEP =', I3)
-  310 IF (COM.EQ.1) WRITE(*,*) 'GRID 19X19;
+  310 IF (ISDEBUG) WRITE(*,*) 'GRID 19X19;
      * BEGINNING THE SEARCH OF THE ROOT.'
       XX = V0
 
@@ -255,21 +261,21 @@ C     DEFAULT PARAMETERS
       ENDDO
       
       GO TO 400
-  500 IF (COM.EQ.1) WRITE(*,*)' END OF THE SEARCH OF THE ROOT'
-      IF (COM.EQ.1) WRITE(*,*)' IN THE INTERVAL'
-      IF (COM.EQ.1) WRITE(*,526) V0,V
+  500 IF (ISDEBUG) WRITE(*,*)' END OF THE SEARCH OF THE ROOT'
+      IF (ISDEBUG) WRITE(*,*)' IN THE INTERVAL'
+      IF (ISDEBUG) WRITE(*,526) V0,V
       
   526 FORMAT(E10.3,1H ,E10.3,1H )
-      IF (COM.EQ.1) WRITE(*,*)'CHANGES OF SIGNS AT FUNCT
+      IF (ISDEBUG) WRITE(*,*)'CHANGES OF SIGNS AT FUNCT
      * OF STABILITY ARE NOT REV'
       WRITE (*,70) 0,0
       STOP
       
-  300 IF (COM.EQ.1) WRITE(*,15) IN
+  300 IF (ISDEBUG) WRITE(*,15) IN
    15 FORMAT(5H IN =,I3)
       B = XX
       A = XX-STEP
-      IF (COM.EQ.1) WRITE(*,14) A,B
+      IF (ISDEBUG) WRITE(*,14) A,B
    14 FORMAT (4H A =,E10.3,4H B =,E10.3)
 
       NLAMD = NLAMDA
@@ -282,26 +288,26 @@ C     DEFAULT PARAMETERS
       
       CALL C05ADF (A,B,EPS1,ETA,F,X,IFAIL)
       
-      IF (COM.EQ.1) WRITE(*,*) 'IFAIL = ',IFAIL
+      IF (ISDEBUG) WRITE(*,*)'IFAIL =',IFAIL
       IF (IFAIL.NE.0) THEN
           WRITE(*,70) 0,0
           STOP
       ENDIF
       
-      IF (COM.EQ.1) WRITE(*,13) M,N
+      IF (ISDEBUG) WRITE(*,13) M,N
    13 FORMAT(' ON THE GRID M =',I3,'N =',I3,'CRITICAL SPEED IS FOUND:')
-      IF (COM.EQ.1) WRITE(*,12) X
+      IF (ISDEBUG) WRITE(*,12) X
    12 FORMAT (1X,E15.8)
       IF(KEY1.NE.'Y'.AND.KEY1.NE.'A') THEN
           V = X
           IN = NLAMDA
-          IF (COM.EQ.1) WRITE(*,*)' REZULT'
-          IF (COM.EQ.1) WRITE(*,70) V, IN
+          IF (ISDEBUG) WRITE(*,*)' REZULT'
+          IF (ISDEBUG) WRITE(*,70) V, IN
           RETURN
       ENDIF
       V9 = X
       IN9 = IN
-      IF (COM.EQ.1) WRITE(*,*) 'GRID 21X21;
+      IF (ISDEBUG) WRITE(*,*) 'GRID 21X21;
      * BEGINNING THE SEARCH OF THE ROOT.'
       M = 21
       N = 21
@@ -369,70 +375,70 @@ C
           ENDDO
           GO TO 402
 
-  302     IF (COM.EQ.1) WRITE(*,15) IN
+  302     IF (ISDEBUG) WRITE(*,15) IN
           A1 = XX
           B1 = XX+STEP
           IP = 1
           GO TO 303
-  301     IF (COM.EQ.1) WRITE(*,15) IN
+  301     IF (ISDEBUG) WRITE(*,15) IN
           B1 = XX
           A1 = XX - STEP
           IP = 2
-          IF (COM.EQ.1) WRITE(*,14) A1,B1
+          IF (ISDEBUG) WRITE(*,14) A1,B1
   303     NLAMDA = IN
           
           CALL C05ADF (A1,B1,EPS1,ETA,F,X,IFAIL)
           
-          IF (COM.EQ.1) WRITE(*,*) 'IFAIL = ',IFAIL
+          IF (ISDEBUG) WRITE(*,*)'IFAIL =',IFAIL
           IF (IFAIL.NE.0) THEN
               WRITE(*,70) 0,0
               STOP
           ENDIF
-          IF (COM.EQ.1) WRITE(*,33) M,N
+          IF (ISDEBUG) WRITE(*,33) M,N
    33 FORMAT(' ON THE GRID OF M =', I3,'N =', I3,' CRITICAL SPEED:')
 
-          IF (COM.EQ.1) WRITE(*,12) X
-          IF (COM.EQ.1) WRITE(*,15) NLAMDA
+          IF (ISDEBUG) WRITE(*,12) X
+          IF (ISDEBUG) WRITE(*,15) NLAMDA
           V19(IP) = X
           IN19(IP) = NLAMDA
           IF(IP.EQ.2) THEN
               VL = A - NSTEP*STEP
-              IF (COM.EQ.1) WRITE (*,34) A
+              IF (ISDEBUG) WRITE (*,34) A
    34 FORMAT(' THE ROOT TO THE LEFT OF THE POINT',E10.3)
               GO TO 501
           ENDIF
           
       ELSE
           CALL C05ADF (A,B,EPS1,ETA,F,X,IFAIL)
-          IF (COM.EQ.1) WRITE (*,*) ' IFAIL = ',IFAIL
+          IF (ISDEBUG) WRITE (*,*)' IFAIL =',IFAIL
           IF (IFAIL.NE.0) THEN
               WRITE(*,70) 0,0
               STOP
           ENDIF
-          IF (COM.EQ.1) WRITE(*,12) X
-          IF (COM.EQ.1) WRITE(*,15) NLAMDA
+          IF (ISDEBUG) WRITE(*,12) X
+          IF (ISDEBUG) WRITE(*,15) NLAMDA
           V19(1) = X
           IN19(1) = NLAMDA
           V = X
           IN = NLAMDA
           NLAMDA = NLAMD
-          IF (COM.EQ.1) WRITE(*,*) 'REZULT'
+          IF (ISDEBUG) WRITE(*,*) 'REZULT'
           WRITE(*,70) V,IN
       ENDIF
       
       
-      IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,50) V9,IN9
-      IF (COM.EQ.1) WRITE(*,60) V19(1), IN19(1)
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,50) V9,IN9
+      IF (ISDEBUG) WRITE(*,60) V19(1), IN19(1)
       GO TO 800
 
   502 CONTINUE
-      IF (COM.EQ.1) WRITE(*,35) A
+      IF (ISDEBUG) WRITE(*,35) A
    35 FORMAT(' SLEVA FROM THE POINT, CRITICAL SPEED IS NOT FOUND',E10.3,
      *'CRITICAL SPEED IS NOT FOUND')
-      IF (COM.EQ.1) WRITE(*,50) V9,IN9
-      IF (COM.EQ.1) WRITE(*,60) V19(1),IN19(1)
-      IF (COM.EQ.1) WRITE(*,60) V19(2),IN19(2)
+      IF (ISDEBUG) WRITE(*,50) V9,IN9
+      IF (ISDEBUG) WRITE(*,60) V19(1),IN19(1)
+      IF (ISDEBUG) WRITE(*,60) V19(2),IN19(2)
    50 FORMAT(' V9 =',E13.6,'IN9 =',I3)
    60 FORMAT(' V19 =',E13.6,'IN19 =',I3)
       V = V19(2)
@@ -441,8 +447,8 @@ C
           V = V19(1)
           IN = IN19(1)
       ENDIF
-      IF (COM.EQ.1) WRITE(*,*) ' '
-      IF (COM.EQ.1) WRITE(*,*) 'REZULT'
+      IF (ISDEBUG) WRITE(*,*) ' '
+      IF (ISDEBUG) WRITE(*,*) 'REZULT'
       WRITE(*,70) V,IN
       NLAMDA = NLAMD
    70 FORMAT(E13.6,';',I3)
@@ -454,12 +460,12 @@ C
 C     ---------------------------------------------------------------------------
 
       REAL*8 FUNCTION F(XX)
-C 19.09.96
       IMPLICIT REAL*8 (A-H,O-Z)
       character*26 PATH 
       COMMON /COM1/ IPR,NUMB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
       COMMON /DATA/ K,H,BL,RO,DB
+      COMMON /DEBUG/ ISDEBUG
       COMMON /FL/ FLG(20)
       COMMON /ABH0H1/ A,B,H0,H1
       COMMON //PATH
@@ -483,54 +489,59 @@ C     CALCULATING THE EIGENVALUES OF A MATRIX H0
       CALL HQRM2(NT,NT,LOW,IGH,H0,X,Y,IERR,100)
       
       IF (IERR.NE.0) THEN
-      WRITE(*,*) ' HQRM2 IERR = ', IERR
-      STOP
+          WRITE(*,*)' HQRM2 IERR = ',IERR
+          STOP
       ENDIF
-C 13  FORMAT (13I5)
+
   12  FORMAT (4E18.11)
-      IL=0
+      IL = 0
       
-      DO 90 I=1,NT
-   90 IJ(I)=1
-C Вычисление минимального по модулю собственного значения
-  100 IL=IL+1
-      P=1.D25
-      DO 33 I=1,NT
-      IF(IJ(I).EQ.0) GO TO 33
-      Q=SQRT(X(I)**2+Y(I)**2)
-      IF(Y(I).LT.0.D0) GO TO 33
-      IF(Q.LT.P) THEN
-      P=Q
-      II=I
-      ENDIF
+      DO 90 I = 1,NT
+   90 IJ(I) = 1
+      
+C     ВЫЧИСЛЕНИЕ МИНИМАЛЬНОГО ПО МОДУЛЮ СОБСТВЕННОГО ЗНАЧЕНИЯ
+C     SEARCH OF THE ABS(MAX) EIGENVALUE
+      
+  100 IL = IL+1
+      P = 1.D25
+      
+      DO 33 I = 1,NT
+          IF(IJ(I).EQ.0) GO TO 33
+          Q = SQRT(X(I)**2+Y(I)**2)
+          IF(Y(I).LT.0.D0) GO TO 33
+          IF(Q.LT.P) THEN
+              P = Q
+              II = I
+          ENDIF
    33 CONTINUE
-      CZ=CMPLX(X(II),Y(II))
-      LAMDA(IL)=CZ
-C Проверка условия устойчивости
-      FL=REAL(CZ)*K**2-RO*H*DIMAG(CZ)**2
-      FLG(IL)=FL
+      
+      CZ = CMPLX(X(II),Y(II))
+      LAMDA(IL) = CZ
+      
+C     ПРОВЕРКА УСЛОВИЯ УСТОЙЧИВОСТИ
+C     CHECKING THE STABILITY CONDITION
+      
+      
+      FL = REAL(CZ)*K**2-RO*H*DIMAG(CZ)**2
+      FLG(IL) = FL
       IF(IL.LT.NLAMDA) THEN
-      IJ(II)=0
-      IF(Y(II).NE.0.D0) IJ(II+1)=0
-      GO TO 100
+          IJ(II) = 0
+          IF(Y(II).NE.0.D0) IJ(II+1) = 0
+              GO TO 100
       ENDIF
    52 FORMAT (9E8.1)
-      F=FL
+      F = FL
       IF(IPR.EQ.2) WRITE (*,120) F,XX
-  120 FORMAT (10H        F=,E12.4,10H        V=,E12.4)
+  120 FORMAT ('F =',E12.4,'V =',E12.4)
       RETURN
       END
+
+
+
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE FLUT33D
-C 22.03.97 Тетрадь Флаттер N 4, стр. 69
       IMPLICIT REAL*8 (A-H,O-Z)
-C
-C     PARAMETER (M=19,N=19,NT=M*N,BL=0.25)
-C     PARAMETER (M=19,N=19,NT=M*N,MMI=NT,MI=2,BL=0.5)
-C     DIMENSION A(N,N),B(M,M),DX(N,N),DY(M,M),H0(NT,NT),H1(NT,NT),
-C    1X(NT),Y(NT),INT(NT),IJ(NT),URR(NT),UI(NT),ER(M),YY(N),Z(N),
-C    2Y2(21),SCALE(NT)
-C     DIMENSION  ZZ(NT,NT),RM1(NT,NT),
-C    *RV1(NT),RV2(NT)
       DIMENSION A(160000),B(2500),DX(2500),DY(2500),H0(6250000),
      1H1(6250000),X(2500),Y(2500),INT(2500),IJ(2500),URR(2500),UI(2500),
      2ER(50),YY(50),Z(50),Y2(51),SCALE(2500),ZZ(6250000),RM1(6250000),
@@ -546,8 +557,9 @@ C    *RV1(NT),RV2(NT)
       COMMON /DATA/ K,H,BL,RO,DB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
       COMMON /COM3/ V,IN
+      COMMON /DEBUG/ ISDEBUG
       COMMON //PATH      
-C
+
       WRITE (*,*) 'AUTOMATIC FINDING OF EIGEN
      *VECTOR (Y/Q)'
       
@@ -555,41 +567,13 @@ C
    10 FORMAT(A)
       IF(KEY1.EQ.'Q') RETURN
       IF(KEY1.EQ.'Y') GO TO 110
-      RETURN
-      WRITE (*,*) ' '
-      WRITE (*,*) 'M = ?, N = ?'
-      READ (*,*) M,N
-      IF(M.GT.50.OR.N.GT.50) THEN
-      WRITE (*,*) 'M или N больше 50. Stop'
-      STOP
-      ENDIF
-C
-      NT=M*N
-      MMI=NT
-      MI=2
-C
-      WRITE(*,*)' '
-      WRITE(*,*)'TJ =?'
-      READ (*,*)TJ1,TJ2
-      TJ=TJ1/TJ2
-C
-      WRITE(*,*)' '
-      WRITE(*,*)'NLAMDA = ?'
-C
-      READ (*,*) NLAMDA
-      IF(NLAMDA.GT.20) THEN
-      WRITE (*,*)'M OR N MORE THAN 20. STOP'
-      STOP
-      ENDIF
-      WRITE(*,*)'ENTER THE VELOCITY VECTOR'
-      READ(*,*) V
+
   110 CONTINUE
+      
       CALL MATRH1 (M,N,NT,H0,A,B,DX,DY,H1,TJ,BL,K,DB,V,NUMB)
-C     CALL MATRH3 (M,N,NT,H0,DX,DY,H1,TJ,BL,K,DB,XX)
-C     CALL MATRH3 (M,N,NT,H0,DX,DY,H1,TJ,BL,K,DB,V)
 C Вычисление собственных значений матрицы H0
-      MMI=NT
-      MI=2
+      MMI = NT
+      MI = 2
       NOUT = 4
       OPEN(UNIT=NOUT,FILE=TRIM(ADJUSTL(PATH))//'NOUT')
       WRITE (*,75) V,IN
@@ -598,13 +582,15 @@ C Вычисление собственных значений матрицы H0
       OPEN (8,FILE=TRIM(ADJUSTL(PATH))//'MATRA')
       DO 170 I=1,NT
   170 SELECT(I)=.FALSE.
+      
       CALL BALANC(NT,NT,H0,LOW,IGH,SCALE)
       CALL ELMHES(NT,NT,LOW,IGH,H0,INT)
+      
       WRITE(8,12) (H0(I),I=1,NT*NT)
       ENDFILE 8
-C     CALL HQRM(NT,NT,LOW,IGH,H0,X,Y,IERR)
+
       CALL HQRM2(NT,NT,1,NT,H0,X,Y,IERR,200)
-C     CALL HQR (NT,NT,LOW,IGH,H0,X,Y,IERR)
+
       WRITE(*,*) 'IERR = ',IERR
   12  FORMAT (4E18.11)
       WRITE(NOUT,*) 'Real part of eigenvalues'
@@ -701,12 +687,11 @@ C     PAUSE
      1URR(IJ)
       ENDDO
       ENDDO
-      WRITE (*,*) 'Write Maple'
 150   FORMAT(1X,F9.5,F9.5,F9.5)                 
-      WRITE (NOUT,*) 'Eigenvector RE'
+      WRITE (NOUT,*) 'EIGENVECTOR RE'
       WRITE (NOUT,12) (URR(I),I=1,NT)
       WRITE (9,12) (URR(I),I=1,NT)
-      WRITE (NOUT,*) 'Eigenvector IM'
+      WRITE (NOUT,*) 'EIGENVECTOR IM'
       WRITE (NOUT,12) (UI(I),I=1,NT)
 C Обязательно M нечетное
       DO 40 I=1,N
@@ -715,7 +700,7 @@ C Обязательно M нечетное
       X2=-1.+0.1*(LL-1)
 20    Y2(LL)=EIGEN(X2,YY,Z,N,-1.D0,+1.D0)
       CALL NORM (Y2,21)
-      WRITE(NOUT,*) 'Eigenvector Re on the axis x in 21 points'
+      WRITE(NOUT,*) 'EIGENVECTOR RE ON THE AXIS X IN 21 POINTS'
       WRITE(NOUT,12) Y2
       PRINT 12,Y2
       IF(DIMAG(CZ).EQ.0.D0) GO TO 200
@@ -725,12 +710,12 @@ C Обязательно M нечетное
       X2=-1.+0.1*(LL-1)
 21    Y2(LL)=EIGEN(X2,YY,Z,N,-1.D0,+1.D0)
       CALL NORM (Y2,21)
-      WRITE(NOUT,*) 'Eigenvector Im on the axis x in 21 points'
+      WRITE(NOUT,*) 'EIGENVECTOR IM ON THE AXIS X IN 21 POINTS'
       WRITE(NOUT,12) Y2
       PRINT 12,Y2
   200 CONTINUE
-      WRITE (*,*) 'Check of symmetry of the eigenvector'
-      WRITE (NOUT,*) 'Check of symmetry of the eigenvector'
+      WRITE (*,*) 'CHECK OF SYMMETRY OF THE EIGENVECTOR'
+      WRITE (NOUT,*) 'CHECK OF SYMMETRY OF THE EIGENVECTOR'
       NM=(M-1)/2
       DO 50 I=1,NM
       I1=(I-1)*N
@@ -816,6 +801,10 @@ C     WRITE(*,12) U(1),U(NT)
       WRITE (5,13) Y2
       RETURN
       END                                                               ZAP01380
+      
+
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE NORM1(Y,N)
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION Y(1)
@@ -829,11 +818,15 @@ C     WRITE(*,12) U(1),U(NT)
   2   Y(I)=Y(I)/P
       RETURN
       END
+      
+      
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE FLUT16D
-C 28.02.97 Флаттер тетрадь N4,стр. 47
+
       IMPLICIT REAL*8 (A-H,O-Z)
-C     PARAMETER (M=19,N=19,NT=M*N,NG=101)
-C     DIMENSION U(NT),Y(NT),Z(NT),Y2(NG),X2(NG),W2(NG,NG),Z2(M,NG)
+
+      
       DIMENSION U(2500),Y(2500),Z(2500),X2(101),W2(101,101),
      *Z2(4040)
       REAL*8 K
@@ -846,46 +839,50 @@ C     DIMENSION U(NT),Y(NT),Z(NT),Y2(NG),X2(NG),W2(NG,NG),Z2(M,NG)
       OPEN (9,FILE=TRIM(ADJUSTL(PATH))//'FDATA1')
       REWIND 9
       READ(9,12) (U(I),I=1,NT)
-C     READ(4,12) U
-C 12  FORMAT (1X,4E18.11)
+
+      
   12  FORMAT (4E18.11)
-C     WRITE(*,12) U(1),U(NT)
-C
+
+
       DO 50 J=1,M
       DO 40 I=1,N
 40    Y(I)=U(N*(J-1)+I)
       DO 20 L=1,NG
       X=-1.+0.02*(L-1)
       X2(L)=X
-C 20  Z2(J,L)=EIGEN (X,Y,Z,N,-1.D0,+1.D0)
+
   20  Z2((L-1)*M+J)=EIGEN (X,Y,Z,N,-1.D0,+1.D0)
   50  CONTINUE
-C
+
       OPEN(7,FILE=TRIM(ADJUSTL(PATH))//'RDATA2')
       WRITE (7,13) X2
   13  FORMAT(1X,4E19.11)
-C     WRITE(*,12) U(1),U(NT)
-C
-      DO 60 J=1,NG
-      DO 41 I=1,M
-C 41  Y(I)=Z2(I,J)
-  41  Y(I)=Z2((J-1)*M+I)
-C
-      STEP=2.*BL/(NG-1)
-      DO 21 L=1,NG
-      X=-BL+STEP*(L-1)
-      X2(L)=X
-C 21  W2(J,L)=EIGEN (X,Y,Z,M,-BL,BL)
+
+
+      DO 60 J = 1,NG
+      DO 41 I = 1,M
+          
+  41  Y(I) = Z2((J-1)*M+I)
+
+      STEP = 2.*BL/(NG-1)
+      DO 21 L = 1,NG
+      X = -BL+STEP*(L-1)
+      X2(L) = X
+
   21  W2(L,J)=EIGEN (X,Y,Z,M,-BL,BL)
   60  CONTINUE
-C
+
       CALL NORM1(W2,NG*NG)
-C
+
       WRITE (7,13) X2
       WRITE (7,13) W2
-C
+
       RETURN
-      END                                                               
+      END
+         
+                                               
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE MATRH2 (M,N,NT,H0,A,B,H1,BL,NUMB)
 C  Вычисление матрицы для свободно опертой и защемленной прямоугольной пластины
       IMPLICIT REAL*8 (A-H,O-Z)
@@ -929,6 +926,10 @@ C
   110 CONTINUE
       RETURN
       END
+      
+      
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE MATRH3 (M,N,NT,H0,DX,DY,H1,TJ,BL,K,DB,V)
 C Вычисление матрицы для свободно опертой и защемленной прямоугольной пластины
       IMPLICIT REAL*8 (A-H,O-Z)
@@ -1040,69 +1041,10 @@ C
     7 H0(I,J)=DB*H1(I,J)-K*H0(I,J)
       RETURN
       END
-!      SUBROUTINE BOXBIG_Old (H,N,M,NT,BL)
-!      IMPLICIT REAL*8 (A-H,O-Z)
-!      INTEGER P
-!      DIMENSION H(NT,NT),TP(50),TP1(50),TP2(50),TP3(50),TP4(50),
-!     *TK(50),TK1(50),TK2(50),TK3(50),TK4(50)
-!      IF (N.GT.50.OR.M.GT.50) THEN
-!      WRITE (*,*) 'M or N more than 50. Stop.'
-!      STOP
-!      ENDIF
-!C     Построение матрицы H
-!      PI=3.141592653589D0
-!      I1=0
-!      WRITE (*,*) 'HELLO'
-!      DO 2 MU=1,M
-!      Z=COS((2.*MU-1.)*PI/2./M)
-!      Z2=Z*Z
-!      Z3=Z2*Z
-!      Z4=Z3*Z
-!      CALL DIFT (Z,M,TP,TP1,TP2,TP3,TP4)
-!      DO 2 NU=1,N
-!      X=COS((2.*NU-1.)*PI/2./N)
-!      X2=X*X
-!      X3=X2*X
-!      X4=X3*X
-!      I1=I1+1
-!      CALL DIFT (X,N,TK,TK1,TK2,TK3,TK4)
-!      I2=0
-!      DO 2 I=1,M
-!      TI=(2.*I-1.)*PI/2./M
-!      STI=SIN(TI)**4
-!      DO 2 J=1,N
-!      TJ=(2.*J-1.)*PI/2./N
-!      STJ=SIN(TJ)**4
-!      I2=I2+1
-!      SUM=0.D0
-!      DO 3 K=0,N-1
-!      TKJ=COS(K*TJ)
-!      IF (K.EQ.0) TKJ=0.5*TKJ
-!      D2DX2=(12.*X2-4.)*TK(K+1)+(8.*X3-8.*X)*TK1(K+1)+
-!     +(X4-2.*X2+1.)*TK2(K+1)
-!      D4DX4=24.*TK(K+1)+96.*X*TK1(K+1)+(72.*X2-
-!     -24.)*TK2(K+1)+(16.*X3-16.*X)*TK3(K+1)+
-!     +(X4-2.*X2+1.)*TK4(K+1)
-!      DO 3 P=0,M-1
-!      TPI=COS(P*TI)
-!      IF (P.EQ.0) TPI=0.5*TPI
-!      D2DZ2=(12.*Z2-4.)*TP(P+1)+(8.*Z3-8.*Z)*TP1(P+1)+
-!     +(Z4-2.*Z2+1.)*TP2(P+1)
-!      D4DZ4=24.*TP(P+1)+96.*Z*TP1(P+1)+(72.*Z2-
-!     -24.)*TP2(P+1)+(16.*Z3-16.*Z)*TP3(P+1)+
-!     +(Z4-2.*Z2+1.)*TP4(P+1)
-!      DELTA=D4DX4*(Z*Z-1.)**2*TP(P+1)+2.*D2DX2*D2DZ2/BL/BL+
-!     +(X*X-1.)**2*TK(K+1)*D4DZ4/BL**4
-!    3 SUM=SUM+TKJ*TPI*DELTA/STI/STJ
-!    2 H(I1,I2)=4.*SUM/M/N
-!      DO 5 I=1,NT
-!      DO 6 J=I+1,NT
-!C     IF(J.GE.NT) GO TO 5
-!      H(J,I)=(H(J,I)+H(I,J))/2.
-!    6 H(I,J)=H(J,I)
-!    5 CONTINUE
-!      RETURN
-!      END
+
+
+C     ---------------------------------------------------------------------------
+
       SUBROUTINE BOXBIG (H,N,M,NT,BL)
       IMPLICIT REAL*8 (A-H,O-Z)
       INTEGER P
@@ -1110,42 +1052,44 @@ C
      *TK(50),TK1(50),TK2(50),TK3(50),TK4(50)
       COMMON /D/ Dx,Dxy,Dy
       IF (N.GT.50.OR.M.GT.50) THEN
-      WRITE (*,*) 'M or N it is more 50. Stop.'
+      WRITE (*,*) 'M OR N IS MORE THAN 50. STOP.'
       STOP
       ENDIF
-C     Построение марицы H
-      WRITE(*,*) 'BL=', BL
+      
+C     ПОСТРОЕНИЕ МАРИЦЫ H
+C     BUILDING MATRIX H
+      WRITE(*,*) 'BL =',BL
       PAUSE
-      PI=3.141592653589D0
-      I1=0
-      DO 2 MU=1,M
-      Z=COS((2.*MU-1.)*PI/2./M)
-      Z2=Z*Z
-      Z3=Z2*Z
-      Z4=Z3*Z
+      PI = 3.141592653589D0
+      I1 = 0
+      DO 2 MU = 1,M
+      Z = COS((2.*MU-1.)*PI/2./M)
+      Z2 = Z*Z
+      Z3 = Z2*Z
+      Z4 = Z3*Z
       CALL DIFT (Z,M,TP,TP1,TP2,TP3,TP4)
-      DO 2 NU=1,N
-      X=COS((2.*NU-1.)*PI/2./N)
-      X2=X*X
-      X3=X2*X
-      X4=X3*X
-      I1=I1+1
+      DO 2 NU = 1,N
+      X = COS((2.*NU-1.)*PI/2./N)
+      X2 = X*X
+      X3 = X2*X
+      X4 = X3*X
+      I1 = I1+1
       CALL DIFT (X,N,TK,TK1,TK2,TK3,TK4)
-      I2=0
-      DO 2 I=1,M
-      TI=(2.*I-1.)*PI/2./M
-      STI=SIN(TI)**4
-      DO 2 J=1,N
-      TJ=(2.*J-1.)*PI/2./N
-      STJ=SIN(TJ)**4
-      I2=I2+1
-      SUM=0.D0
-      DO 3 K=0,N-1
-      TKJ=COS(K*TJ)
-      IF (K.EQ.0) TKJ=0.5*TKJ
-      D2DX2=(12.*X2-4.)*TK(K+1)+(8.*X3-8.*X)*TK1(K+1)+
+      I2 = 0
+      DO 2 I = 1,M
+      TI = (2.*I-1.)*PI/2./M
+      STI = SIN(TI)**4
+      DO 2 J = 1,N
+      TJ = (2.*J-1.)*PI/2./N
+      STJ = SIN(TJ)**4
+      I2 = I2+1
+      SUM = 0.D0
+      DO 3 K = 0,N-1
+      TKJ = COS(K*TJ)
+      IF (K.EQ.0) TKJ = 0.5*TKJ
+      D2DX2 = (12.*X2-4.)*TK(K+1)+(8.*X3-8.*X)*TK1(K+1)+
      +(X4-2.*X2+1.)*TK2(K+1)
-      D4DX4=24.*TK(K+1)+96.*X*TK1(K+1)+(72.*X2-
+      D4DX4 = 24.*TK(K+1)+96.*X*TK1(K+1)+(72.*X2-
      -24.)*TK2(K+1)+(16.*X3-16.*X)*TK3(K+1)+
      +(X4-2.*X2+1.)*TK4(K+1)
       DO 3 P=0,M-1
