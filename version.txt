@@ -1,0 +1,2 @@
+version: 0.03.117
+info: Refactor from basic programm. Added console input and 'debug' mode.
