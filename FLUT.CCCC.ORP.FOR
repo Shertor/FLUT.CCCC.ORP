@@ -65,7 +65,7 @@ C     CORRESPONDS TO THE SONIC SPEED 331.26 M/SEC
       
 C     аегпюглепмюъ рнкыхмю окюярхмйх H
 C     DIMENSIONLESS PLATE THICKNESS
-      HL = 0.01D0
+      HL = 0.015D0
       IF (ISDEBUG) THEN
           CONTINUE
       ELSE          
@@ -106,15 +106,6 @@ C     SHEAR MODULE H/M**2
           CALL get_command_argument(7, arg)
           READ(arg,*)Gxy
       ENDIF
-
-      
-C     жхкхмдпхвеяйюъ феярйнярэ
-C     CYLINDRICAL STIFFNESS
-      Dx = Ex*HL**3/12.0/(1.0-NUx*NUy)
-      Dy = Ey*HL**3/12.0/(1.0-NUx*NUy)
-      Dxy = 2.0*Gxy*HL**3/12.0+Dx*NUy
-      D = Dx
-      DB = D
       
 
 C     окнрмнярэ бнгдсую 1.2928 (йц/л**3)
@@ -165,6 +156,16 @@ C     DIMENSIONLESS
       Ex = Ex/P0
       Ey = Ey/P0
       Gxy = Gxy/P0
+      
+      
+C     жхкхмдпхвеяйюъ феярйнярэ
+C     CYLINDRICAL STIFFNESS
+      Dx = Ex*HL**3/12.0/(1.0-NUx*NUy)
+      Dy = Ey*HL**3/12.0/(1.0-NUx*NUy)
+      Dxy = 2.0*Gxy*HL**3/12.0+Dx*NUy
+      D = Dx
+      DB = D
+      
       
       Dx = Dx/D
       Dy = Dy/D
