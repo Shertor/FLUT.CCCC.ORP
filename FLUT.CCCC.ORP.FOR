@@ -65,7 +65,8 @@ C     CORRESPONDS TO THE SONIC SPEED 331.26 M/SEC
       
 C     ¡≈«–¿«Ã≈–Õ¿ﬂ “ŒÀŸ»Õ¿ œÀ¿—“»Õ » H
 C     DIMENSIONLESS PLATE THICKNESS
-      HL = 0.015D0
+      HL = 0.01515D0
+      !HL = 0.012D0
       IF (ISDEBUG) THEN
           CONTINUE
       ELSE          
@@ -165,7 +166,6 @@ C     CYLINDRICAL STIFFNESS
       Dxy = 2.0*Gxy*HL**3/12.0+Dx*NUy
       D = Dx
       DB = D
-      
       
       Dx = Dx/D
       Dy = Dy/D
