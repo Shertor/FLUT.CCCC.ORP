@@ -8,14 +8,14 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       CHARACTER*3 KEY
       INTEGER :: i
       CHARACTER(len=32) :: arg
-      COMMON /DATA/ K,H,BL,RO,DB
+      COMMON /DATA/ K,H,BL,RO,DB,TJ1
       COMMON /DEBUG/ ISDEBUG
       COMMON /D/ Dx,Dxy,Dy
       COMMON //PATH
       DATA PATH /'C:/reports/'/
 
       ! IF WRITES ARE NEEDED SET ISDEBUG, ELSE IT PRINTS ONLY RESULT SPEED
-      ISDEBUG = .TRUE.
+      ISDEBUG = .FALSE.
       
       IF (ISDEBUG) THEN
           WRITE(*,*)'-----DEBUG PRINT ALL MODE-----'
@@ -204,7 +204,7 @@ C     --------------------------------------------------------------------------
       EXTERNAL F
       INTEGER :: i
       CHARACTER(len=32) :: arg
-      COMMON /DATA/ K,H,BL,RO,DB
+      COMMON /DATA/ K,H,BL,RO,DB,TJ1
       COMMON /DEBUG/ ISDEBUG
       COMMON /COM1/ IPR,NUMB
       COMMON /COM2/ NLAMDA,TJ,M,N,NT
@@ -224,7 +224,12 @@ C     1 - CCCC    2 - SSSS
       
       TJ2 = 180.0D0
       TJ1 = 0.0D0
-      IF (ISDEBUG) READ (*,*) TJ1
+      IF (ISDEBUG) THEN
+          READ(*,*)TJ1
+      ELSE          
+          CALL get_command_argument(9, arg)
+          READ(arg,*)TJ1
+      ENDIF
       TJ=TJ1/TJ2
       
  700  IF (ISDEBUG) WRITE(*,*) ' '
