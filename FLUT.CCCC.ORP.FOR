@@ -8,7 +8,7 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       CHARACTER*3 KEY
       INTEGER :: i
       CHARACTER(len=32) :: arg
-      COMMON /DATA/ K,H,BL,RO,DB
+      COMMON /DATA/ K,H,BL,RO,DB,TJ1
       COMMON /DEBUG/ ISDEBUG
       COMMON /D/ Dx,Dxy,Dy
       COMMON //PATH
@@ -24,8 +24,8 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       IF (ISDEBUG) THEN
           CONTINUE
       ELSE
-          IF(COMMAND_ARGUMENT_COUNT().NE.8) THEN
-              WRITE(*,*)'BL;HL;Ex;Ey;NUx;NUy;Gxy;RO'
+          IF(COMMAND_ARGUMENT_COUNT().NE.9) THEN
+              WRITE(*,*)'BL;HL;Ex;Ey;NUx;NUy;Gxy;RO;TJ1'
               STOP
           ENDIF
       ENDIF
@@ -222,7 +222,12 @@ C     1 - CCCC    2 - SSSS
       
       TJ2 = 180.0D0
       TJ1 = 0.0D0
-      IF (ISDEBUG) READ (*,*) TJ1
+      IF (ISDEBUG) THEN
+          READ(*,*)TJ1
+      ELSE          
+          CALL get_command_argument(9, arg)
+          READ(arg,*)TJ1
+      ENDIF
       TJ=TJ1/TJ2
       
  700  IF (ISDEBUG) WRITE(*,*) ' '
