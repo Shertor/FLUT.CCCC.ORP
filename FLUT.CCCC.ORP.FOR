@@ -15,7 +15,7 @@ C     FLUTTER OF ORTHOTROPIC RECTANGULAR PLATE
       DATA PATH /'C:/reports/'/
 
       ! IF WRITES ARE NEEDED SET ISDEBUG, ELSE IT PRINTS ONLY RESULT SPEED
-      ISDEBUG = .FALSE.
+      ISDEBUG = .TRUE.
       
       IF (ISDEBUG) THEN
           WRITE(*,*)'-----DEBUG PRINT ALL MODE-----'
@@ -202,6 +202,8 @@ C     --------------------------------------------------------------------------
       CHARACTER*1 KEY,KEY1
       REAL*8 K
       EXTERNAL F
+      INTEGER :: i
+      CHARACTER(len=32) :: arg
       COMMON /DATA/ K,H,BL,RO,DB
       COMMON /DEBUG/ ISDEBUG
       COMMON /COM1/ IPR,NUMB
