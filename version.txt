@@ -1,5 +1,2 @@
-version: 0.03.118
-info: Angle of flow read from console mode
------------------
 version: 0.03.117
 info: Refactor from basic programm. Added console input and 'debug' mode.
